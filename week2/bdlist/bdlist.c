@@ -13,8 +13,13 @@ struct birthday {
 
 static LIST_HEAD(birthday_list);
 
+struct birthday *birthday_node;
+struct birthday *b_n;
+struct birthday *cur_node;
+struct birthday *birthday_cursor;
+struct list_head *cursor, *next;
+
 struct birthday *createBirthday(int day, int month, int year) {
-  struct birthday *birthday_node;
   birthday_node = kmalloc(sizeof(struct birthday), GFP_KERNEL);
   birthday_node -> day = day;
   birthday_node -> month = month;
@@ -25,7 +30,6 @@ struct birthday *createBirthday(int day, int month, int year) {
 
 int simple_init(void) {
   printk("INSTALL MODULE: bdlist\n");
-  struct birthday *b_n;
 
   b_n = createBirthday(23, 2, 1995);
   list_add_tail(&b_n->list, &birthday_list);
@@ -34,7 +38,6 @@ int simple_init(void) {
   b_n = createBirthday(7, 2, 1964);
   list_add_tail(&b_n->list, &birthday_list);
 
-  struct birthday *birthday_cursor;
   list_for_each_entry(birthday_cursor, &birthday_list, list){		// loop를 사용하지 않았는데도 반복적으로 노드들을 방문한다. 왜 그런지 이해해보자.
     printk("OS Module : DAY %d, %d, %d\n", birthday_cursor->day, birthday_cursor->month, birthday_cursor->year);
   }
@@ -56,8 +59,7 @@ void simple_exit(void) {
 
   /* TODO: 이제 본격적으로 연결리스트를 탐색하면서 하나씩 제거하도록 하시면 됩니다. */
   printk("REMOVE MODULE: bdlist\n");
-  struct birthday *cur_node;
-  struct list_head *cursor, *next;
+
   list_for_each_safe(cursor, next, &birthday_list) {		
     cur_node = list_entry(cursor, struct birthday, list);
     printk("OS Module : Removing %d, %d, %d\n", cur_node->day, cur_node->month, cur_node->year);		// 노드 데이터 출력
